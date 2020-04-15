@@ -48,7 +48,7 @@ async def _client(router, hook, script, log):
     socket = zmq_ctx.socket(zmq.SUB, io_loop=loop)
     socket.connect(router)
     socket.subscribe(hook.encode())
-    logging.info(f"server start sub endpoint: {router} hook key: {hook}")
+    logging.info(f"server start endpoint:[{router}] key:[{hook}]")
     task = asyncio.create_task(worker(script, socket))
 
     # watch close signal
@@ -75,4 +75,4 @@ async def _client(router, hook, script, log):
                 type=click.Choice(['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']))
 @click.argument('script')
 def main(router, hook, script, log):
-    asyncio.run(_client(router, hook, script, log))
+    asyncio.run(_client(router.strip(), hook.strip(), script, log))
