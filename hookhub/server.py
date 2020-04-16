@@ -24,7 +24,7 @@ async def handler(request):
     await zsock.send_multipart([hook.encode(), payload])
 
     # send respone
-    return web.Response(text="OK")
+    return web.json_response({"result":"OK"})
 
 
 async def _server(router, log, host, port):
