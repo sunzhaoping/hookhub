@@ -57,6 +57,9 @@ async def _client(router, hook, script, log):
     # start zmq client
     zmq_ctx = zmq.asyncio.Context.instance()
     socket = zmq_ctx.socket(zmq.SUB, io_loop=loop)
+    socket.setsockopt(zmq.TCP_KEEPALIVE, 1)
+    socket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, 120)
+    socket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, 1) 
     socket.connect(router)
     socket.subscribe(hook.encode())
 
