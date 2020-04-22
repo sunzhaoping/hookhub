@@ -24,10 +24,21 @@ async def run(cmd, payload):
         logging.error(f'{stderr.decode()}')
 
 
-async def worker(script, socket):
+async def scheduler(socket, queue):
     while True:
         try:
             [hook, payload] = await socket.recv_multipart()
+            await queue.put(payload)
+        except asyncio.CancelledError:
+            return
+        except Exception as e:
+            logging.error(str(e))
+
+
+async def worker(script, queue):
+    while True:
+        try:
+            payload = await queue.get()
             await run(script, payload)
         except asyncio.CancelledError:
             return
@@ -48,8 +59,11 @@ async def _client(router, hook, script, log):
     socket = zmq_ctx.socket(zmq.SUB, io_loop=loop)
     socket.connect(router)
     socket.subscribe(hook.encode())
+
+    queue = asyncio.Queue()
     logging.info(f"server start endpoint:[{router}] key:[{hook}]")
-    task = asyncio.create_task(worker(script, socket))
+    scheduler_task = asyncio.create_task(scheduler(socket, queue))
+    worker_task = asyncio.create_task(worker(script, queue))
 
     # watch close signal
     close_waiter = asyncio.Future()
