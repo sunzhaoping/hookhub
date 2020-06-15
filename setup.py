@@ -21,7 +21,6 @@ VERSION = VERSION.__version__
 REQUIRES = ['aiohttp',
             'pyzmq',
             'click',
-            'uvloop'
             ]
 
 try:

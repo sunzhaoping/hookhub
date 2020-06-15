@@ -1,8 +1,8 @@
 import os
 import asyncio
 # setup uvloop for asyncio
-import uvloop
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+#import uvloop
+#asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 import zmq
 import zmq.asyncio
 import click
